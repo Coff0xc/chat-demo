@@ -1,3 +1,4 @@
+import { isWebUrl } from '../../utils/url.js'
 import type {
   ContentBlockDelta,
   MessageStreamEvent,
@@ -17,6 +18,7 @@ const isCitation = (value: unknown): value is TextCitation =>
   isRecord(value) &&
   value.type === 'web_search_result_location' &&
   isString(value.url) &&
+  isWebUrl(value.url) &&
   isNullableString(value.title)
 
 /** 只检查消费内容所需的字段，签名及服务端附带的信息保持原样。 */
@@ -103,6 +105,7 @@ const readBlock = (value: unknown): OutputBlockStart | null => {
           return (
             item.type === 'web_search_result' &&
             isString(item.url) &&
+            isWebUrl(item.url) &&
             isString(item.title) &&
             isNullableString(item.snippet) &&
             isNullableString(item.site_name) &&
