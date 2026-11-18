@@ -3,6 +3,10 @@ import { Inflate } from 'fflate'
 const READ_CHUNK_BYTES = 256 * 1024
 // 控制每轮同步解压的工作量；输出交给调用方保存后才继续读取。
 const INFLATE_CHUNK_BYTES = 8 * 1024
+/** 单条目解压后上限，与附件上传上限一致 */
+export const MAX_ENTRY_BYTES = 64 * 1024 * 1024
+/** 整个归档解压后累计上限 */
+export const MAX_ARCHIVE_BYTES = 1024 * 1024 * 1024
 
 /** ZIP 结构损坏或使用了不支持的特性 */
 export class ArchiveError extends Error {
@@ -119,6 +123,7 @@ const readDirectory = async (file: File): Promise<{ entries: Entry[]; offset: nu
   }
   const entries: Entry[] = []
   const paths = new Set<string>()
+  let uncompressed = 0
   let cursor = 0
   for (let index = 0; index < count; index++) {
     if (cursor + 46 > size) {
@@ -155,6 +160,13 @@ const readDirectory = async (file: File): Promise<{ entries: Entry[]; offset: nu
     // 目录和同名文件也不能互相覆盖。
     const identity = path.endsWith('/') ? path.slice(0, -1) : path
     if (paths.has(identity) || (path.endsWith('/') && entrySize !== 0)) {
+      invalid()
+    }
+    if (entrySize > MAX_ENTRY_BYTES) {
+      invalid()
+    }
+    uncompressed += entrySize
+    if (uncompressed > MAX_ARCHIVE_BYTES) {
       invalid()
     }
     paths.add(identity)

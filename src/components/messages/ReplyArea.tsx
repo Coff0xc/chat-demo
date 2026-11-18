@@ -28,6 +28,7 @@ import {
   type Source,
   type Step,
 } from '../../services/chat/view.js'
+import { isWebUrl } from '../../utils/url.js'
 import { Tooltip } from '../base/Tooltip.js'
 import { Markdown } from '../markdown/Markdown.js'
 import { SiteThumbnails } from '../search/SiteLogo.js'
@@ -284,10 +285,12 @@ const PageLink = ({ page, failedTip }: { page: PageItem; failedTip?: string }) =
       <Tooltip content={failedTip}>
         <span className={styles.pageText}>{page.title}</span>
       </Tooltip>
-    ) : (
+    ) : isWebUrl(page.url) ? (
       <a className={styles.pageText} href={page.url} target="_blank" rel="noreferrer">
         {page.title}
       </a>
+    ) : (
+      <span className={styles.pageText}>{page.title}</span>
     )}
     <span className={styles.pageIcon}>
       <IconRightUpOutline14 />
