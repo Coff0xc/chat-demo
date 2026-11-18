@@ -11,7 +11,7 @@
     "type": "tsc -p tsconfig.json",
     "lint": "oxlint src rspack.config.ts",
     "format": "oxfmt --write .",
-    "test": "tsc -p tsconfig.test.json && node --experimental-strip-types --import ./test/register-ts-js.mjs --test test/url.test.ts test/parseEvent.test.ts test/view.test.ts"
+    "test": "tsc -p tsconfig.test.json && node --experimental-strip-types --import ./test/register-ts-js.mjs --test test/url.test.ts test/parseEvent.test.ts test/view.test.ts test/attachments.test.ts"
   },
   "dependencies": {
     "@types/katex": "^0.16.5",
